@@ -3,6 +3,7 @@ package org.jenkinsci.plugins.BuildRotator;
 import hudson.Extension;
 import hudson.model.Job;
 import hudson.model.Run;
+import hudson.tasks.LogRotator;
 import jenkins.model.BuildDiscarder;
 import jenkins.model.BuildDiscarderDescriptor;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -16,10 +17,16 @@ import static java.util.logging.Level.FINE;
 import static java.util.logging.Level.FINER;
 
 /**
- * LogRotator without any guaranties. Only for brave enough.
+ * {@link BuildRotator) is memory footprint friendly replacement for {@link LogRotator}.
+ * It doesn't calculate a real number of builds in history (this was implemented to reduce memory consumption).
+ * It assumes that every build with build number bigger then
+ * ("last build number" - "number of builds it should keep") could be removed.
+ *
+ * There is no difference how {@Link BuildRotator} removes builds based on days limit.
  *
  * @author Alexander Akbashev
  */
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class BuildRotator extends BuildDiscarder {
     private static final Logger LOGGER = Logger.getLogger(BuildRotator.class.getName());
 
@@ -114,7 +121,7 @@ public class BuildRotator extends BuildDiscarder {
     }
 
     private void remove(Run lastSuccessfulBuild, Run lastStableBuild, Action action, Run r) throws IOException {
-        if (!shouldKeepRun(r, lastSuccessfulBuild, lastStableBuild)) {
+        if (!r.isBuilding() && !shouldKeepRun(r, lastSuccessfulBuild, lastStableBuild)) {
             if (action == Action.DELETE_BUILD) {
                 LOGGER.log(FINE, "{0} is to be removed", r);
                 r.delete();
