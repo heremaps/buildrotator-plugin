@@ -17,12 +17,12 @@ import static java.util.logging.Level.FINE;
 import static java.util.logging.Level.FINER;
 
 /**
- * {@link BuildRotator) is memory footprint friendly replacement for {@link LogRotator}.
+ * {@link BuildRotator} is memory footprint friendly replacement for {@link LogRotator}.
  * It doesn't calculate a real number of builds in history (this was implemented to reduce memory consumption).
- * It assumes that every build with build number bigger then
+ * It assumes that every build with build number smaller then
  * ("last build number" - "number of builds it should keep") could be removed.
  *
- * There is no difference how {@Link BuildRotator} removes builds based on days limit.
+ * There is no difference how {@link BuildRotator} removes builds based on days limit.
  *
  * @author Alexander Akbashev
  */
